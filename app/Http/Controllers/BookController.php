@@ -13,7 +13,11 @@ class BookController extends Controller
     {
         $books = \App\Models\Book::when(request('title'), function ($query, $title) {
             return $query->title($title);
-        })->get();
+        })
+            ->withCount('reviews')
+            ->withAvg('reviews', 'rating')
+            ->latest()
+            ->get();
 
         return view('books.index', ['books' => $books]);
     }
