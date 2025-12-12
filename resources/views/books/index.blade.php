@@ -30,6 +30,25 @@
     @endif
 </form>
 
+<div class="bg-gray-100 rounded-xl p-2 mb-8 inline-flex flex-wrap gap-2">
+    @php
+    $filters = [
+    '' => 'Latest',
+    'popular_last_month' => 'Popular Last Month',
+    'popular_last_6months' => 'Popular Last 6 Months',
+    'highest_rated_last_month' => 'Highest Rated Last Month',
+    'highest_rated_last_6months' => 'Highest Rated Last 6 Months',
+    ];
+    @endphp
+
+    @foreach ($filters as $key => $label)
+    <a href="{{ route('books.index', [...request()->query(), 'filter' => $key]) }}"
+        class="{{ request('filter') === $key || (request('filter') === null && $key === '') ? 'bg-white text-blue-600 shadow-sm ring-1 ring-slate-900/5' : 'text-slate-600 hover:bg-white/50 hover:text-slate-900' }} px-4 py-2 rounded-lg text-sm font-medium transition-all">
+        {{ $label }}
+    </a>
+    @endforeach
+</div>
+
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
     @forelse ($books as $book)
     <a href="{{ route('books.show', $book) }}" class="group block bg-white rounded-2xl shadow-sm border border-slate-100 p-6 transition-all hover:-translate-y-1 hover:shadow-xl hover:border-blue-100">

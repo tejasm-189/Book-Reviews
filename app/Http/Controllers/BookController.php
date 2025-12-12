@@ -11,13 +11,31 @@ class BookController extends Controller
      */
     public function index()
     {
-        $books = \App\Models\Book::when(request('title'), function ($query, $title) {
-            return $query->title($title);
-        })
-            ->withCount('reviews')
-            ->withAvg('reviews', 'rating')
-            ->latest()
-            ->get();
+        $title = request('title');
+        $filter = request('filter', '');
+
+        $books = \App\Models\Book::when($title, fn($query, $title) => $query->title($title));
+
+        $books = match ($filter) {
+            'popular_last_month' => $books->popular(now()->subMonth(), now())
+                ->highestRated(now()->subMonth(), now())
+                ->minReviews(2),
+            'popular_last_6months' => $books->popular(now()->subMonths(6), now())
+                ->highestRated(now()->subMonths(6), now())
+                ->minReviews(5),
+            'highest_rated_last_month' => $books->highestRated(now()->subMonth(), now())
+                ->popular(now()->subMonth(), now())
+                ->minReviews(2),
+            'highest_rated_last_6months' => $books->highestRated(now()->subMonths(6), now())
+                ->popular(now()->subMonths(6), now())
+                ->minReviews(5),
+            default => $books->latest()->withAvg('reviews', 'rating')->withCount('reviews'),
+        };
+
+        // $books = $books->get(); // Old simple get
+
+        // Use cache for performance if needed, but for now simple get
+        $books = $books->get();
 
         return view('books.index', ['books' => $books]);
     }
