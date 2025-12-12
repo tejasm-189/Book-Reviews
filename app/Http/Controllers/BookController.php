@@ -11,7 +11,11 @@ class BookController extends Controller
      */
     public function index()
     {
-        //
+        $books = \App\Models\Book::when(request('title'), function ($query, $title) {
+            return $query->title($title);
+        })->get();
+
+        return view('books.index', ['books' => $books]);
     }
 
     /**
@@ -33,9 +37,13 @@ class BookController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(int $id)
     {
-        //
+        $book = \App\Models\Book::with([
+            'reviews' => fn($query) => $query->latest()
+        ])->withCount('reviews')->withAvg('reviews', 'rating')->findOrFail($id);
+
+        return view('books.show', ['book' => $book]);
     }
 
     /**
