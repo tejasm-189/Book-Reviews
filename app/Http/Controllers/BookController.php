@@ -56,14 +56,25 @@ class BookController extends Controller
         //
     }
 
-    /**
-     * Display the specified resource.
-     */
+
+
     public function show(int $id)
     {
-        $book = \App\Models\Book::with([
-            'reviews' => fn($query) => $query->latest()
-        ])->withCount('reviews')->withAvg('reviews', 'rating')->findOrFail($id);
+        $cacheKey = 'book:' . $id;
+
+        if (cache()->has($cacheKey)) {
+            $book = cache()->get($cacheKey);
+            session()->now('flash_message', 'Loaded from Cache ⚡️');
+            session()->now('flash_class', 'bg-green-100 text-green-700 border-green-200');
+        } else {
+            $book = \App\Models\Book::with([
+                'reviews' => fn($query) => $query->latest()
+            ])->withCount('reviews')->withAvg('reviews', 'rating')->findOrFail($id);
+
+            cache()->put($cacheKey, $book, 3600);
+            session()->now('flash_message', 'Loaded from Database 💽');
+            session()->now('flash_class', 'bg-blue-100 text-blue-700 border-blue-200');
+        }
 
         return view('books.show', ['book' => $book]);
     }

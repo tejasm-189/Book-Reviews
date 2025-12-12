@@ -28,6 +28,11 @@
     </div>
 
     <main class="container mx-auto max-w-5xl px-4 mt-24 mb-10 min-h-screen">
+        @if (session('flash_message'))
+        <div class="fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg border font-medium {{ session('flash_class', 'bg-slate-800 text-white') }} transition-all animate-bounce">
+            {{ session('flash_message') }}
+        </div>
+        @endif
         @yield('content')
     </main>
 
