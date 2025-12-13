@@ -58,16 +58,33 @@
             </h3>
             <p class="text-slate-500 mb-4 text-sm font-medium">by {{ $book->author }}</p>
 
-            <div class="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
-                <div class="flex items-center text-yellow-500 font-bold">
-                    <span class="text-lg mr-1">{{ number_format($book->reviews_avg_rating, 1) }}</span>
-                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                        <path
-                            d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                    </svg>
+            <div class="mt-auto pt-4 border-t border-slate-100">
+                @if(isset($book->filtered_reviews_count))
+                <!-- Filtered Stats (Active Context) -->
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center text-blue-600 font-bold">
+                        <span class="text-lg mr-1">{{ number_format($book->filtered_reviews_avg_rating, 1) }}</span>
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                        </svg>
+                    </div>
+                    <div class="text-xs text-blue-600 font-medium uppercase tracking-wider bg-blue-50 px-2 py-1 rounded-md">
+                        {{ $book->filtered_reviews_count }} {{ Str::plural('recent', $book->filtered_reviews_count) }}
+                    </div>
                 </div>
-                <div class="text-xs text-slate-400 font-medium uppercase tracking-wider">
-                    {{ $book->reviews_count }} {{ Str::plural('review', $book->reviews_count) }}
+                @endif
+
+                <!-- Global Stats -->
+                <div class="flex items-center justify-between {{ isset($book->filtered_reviews_count) ? 'opacity-60 grayscale' : '' }}">
+                    <div class="flex items-center text-yellow-500 font-bold">
+                        <span class="text-lg mr-1">{{ number_format($book->reviews_avg_rating, 1) }}</span>
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                        </svg>
+                    </div>
+                    <div class="text-xs text-slate-400 font-medium uppercase tracking-wider">
+                        {{ $book->reviews_count }} {{ Str::plural('total', $book->reviews_count) }}
+                    </div>
                 </div>
             </div>
         </div>

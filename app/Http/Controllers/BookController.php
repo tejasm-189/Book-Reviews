@@ -29,10 +29,12 @@ class BookController extends Controller
             'highest_rated_last_6months' => $books->highestRated(now()->subMonths(6), now())
                 ->popular(now()->subMonths(6), now())
                 ->minReviews(5),
-            default => $books->latest()->withAvg('reviews', 'rating')->withCount('reviews'),
+            default => $books->latest(),
         };
 
         // $books = $books->get(); // Old simple get
+
+        $books = $books->withAvg('reviews', 'rating')->withCount('reviews');
 
         // Use cache for performance if needed, but for now simple get
         $books = $books->get();

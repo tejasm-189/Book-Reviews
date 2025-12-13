@@ -24,22 +24,22 @@ class Book extends Model
     public function scopePopular(Builder $query, $from = null, $to = null): Builder
     {
         return $query->withCount([
-            'reviews' => fn(Builder $q) => $this->dateRangeFilter($q, $from, $to)
+            'reviews as filtered_reviews_count' => fn(Builder $q) => $this->dateRangeFilter($q, $from, $to)
         ])
-            ->orderBy('reviews_count', 'desc');
+            ->orderBy('filtered_reviews_count', 'desc');
     }
 
     public function scopeHighestRated(Builder $query, $from = null, $to = null): Builder
     {
         return $query->withAvg([
-            'reviews' => fn(Builder $q) => $this->dateRangeFilter($q, $from, $to)
+            'reviews as filtered_reviews_avg_rating' => fn(Builder $q) => $this->dateRangeFilter($q, $from, $to)
         ], 'rating')
-            ->orderBy('reviews_avg_rating', 'desc');
+            ->orderBy('filtered_reviews_avg_rating', 'desc');
     }
 
     public function scopeMinReviews(Builder $query, int $minReviews): Builder
     {
-        return $query->having('reviews_count', '>=', $minReviews);
+        return $query->having('filtered_reviews_count', '>=', $minReviews);
     }
 
     private function dateRangeFilter(Builder $query, $from = null, $to = null)
