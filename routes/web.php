@@ -7,6 +7,9 @@ Route::get('/', function () {
 });
 
 Route::resource('books', \App\Http\Controllers\BookController::class);
-Route::resource('books.reviews', \App\Http\Controllers\ReviewController::class)
-    ->scoped(['review' => 'review'])
-    ->only(['create', 'store']);
+Route::get('books/{book}/reviews/create', [\App\Http\Controllers\ReviewController::class, 'create'])
+    ->name('books.reviews.create');
+
+Route::post('books/{book}/reviews', [\App\Http\Controllers\ReviewController::class, 'store'])
+    ->name('books.reviews.store')
+    ->middleware('throttle:reviews');
